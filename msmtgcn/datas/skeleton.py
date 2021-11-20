@@ -9,7 +9,7 @@
 @time    : 2021-11-18 00:41
 '''
 
-import os.path as osp
+import os
 import copy
 import random
 import numpy as np
@@ -18,6 +18,8 @@ import math
 
 import paddle
 from paddle.io import Dataset, DataLoader
+
+from msmtgcn.datas.dcts import get_dct_matrix, dct_transform_numpy
 
 
 class SkeletonDataset(Dataset):
@@ -224,6 +226,52 @@ class SkeletonDataset(Dataset):
         return result
 
 
+class SkeletonDatasetDCT(Dataset):
+
+    def __init__(self, file_path, label_path=None, mode="train", dct_n=30):
+        super(Dataset, self).__init__()
+
+        self.file_path = file_path # [2922/628, 3, 2500, 25, 1]
+        self.label_path = label_path
+        self.mode = mode  # "train", "test", "val_single", "val_repeat"
+        self.dct_n = dct_n
+
+        """Load feature file to get skeleton information."""
+        print("Loading data, it will take some moment...")
+        origin_data = np.load(self.file_path)
+        if mode != "test" and label_path is not None:
+            self.label = np.load(self.label_path)
+
+        print("Data Loaded!")
+
+        confidence = origin_data[:, 2:, :, :, :]  # n, 1, 2500, 25, 1
+        data = origin_data[:, :2, :, :, :]
+
+        # 相对化
+        data = data - data[:, :, :, 8:9, :]
+        # 合并
+        conf_data = data * confidence
+        conf_data = conf_data.squeeze(axis=-1).transpose(0, 3, 1, 2).reshape(data.shape[0], -1, data.shape[2]) # b, 50, 2500
+        # dct
+        self.dct_m, self.i_dct_m = get_dct_matrix(data.shape[2])
+        self.conf_data_dct = dct_transform_numpy(conf_data, dct_m=self.dct_m, dct_n=self.dct_n)  # b, 50, 30
+
+    def __len__(self):
+        """get the size of the dataset."""
+        return len(self.conf_data_dct)
+
+    def __getitem__(self, idx):
+        if self.mode != "test":
+            choose_conf_data_dct = copy.deepcopy(self.conf_data_dct[idx]) # b, 50, 30
+            choose_label = copy.deepcopy(self.label[idx])
+
+            return choose_conf_data_dct, choose_label
+        else:
+            choose_conf_data_dct = copy.deepcopy(self.conf_data_dct[idx])  # b, 50, 30
+            return choose_conf_data_dct
+
+
+
 if __name__ == '__main__':
     from levon_recognition.agcn.datas.draw_pictures import draw_pic_single_2d
 
@@ -231,15 +279,30 @@ if __name__ == '__main__':
     J25 = [12, 13, 14, 19, 20, 21, 9, 10, 11, 22, 23, 24, 1, 0, 15, 17, 16, 18, 2, 3, 4, 5, 6, 7]
     LR25 = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0]
 
-    # ds = SkeletonDataset(file_path=r'E:\\second_model_report_data\\datas\\paddle_action_recognization\\train_dataset\\train_data.npy', label_path=r'E:\\second_model_report_data\\datas\\paddle_action_recognization\\train_dataset\\train_label.npy', mode="train")
-    ds = SkeletonDataset(file_path=r'E:\\second_model_report_data\\datas\\paddle_action_recognization\\test_A_data\\test_A_data.npy', label_path=None, mode="test")
+    # # ds = SkeletonDataset(file_path=r'E:\\second_model_report_data\\datas\\paddle_action_recognization\\train_dataset\\train_data.npy', label_path=r'E:\\second_model_report_data\\datas\\paddle_action_recognization\\train_dataset\\train_label.npy', mode="train")
+    # ds = SkeletonDataset(file_path=r'E:\\second_model_report_data\\datas\\paddle_action_recognization\\test_A_data\\test_A_data.npy', label_path=None, mode="test")
+    #
+    # # ds.get_sample_len()
+    # # ds.get_min_max()
+    #
+    # dl = DataLoader(dataset=ds, batch_size=1, shuffle=False)
+    #
+    # for i, data in enumerate(dl): # b, [repeats], 2, 100, 25, 1
+    #     d2draw = paddle.transpose(data[0, 0, :, 0, :, 0], [1, 0]).numpy()
+    #     draw_pic_single_2d(d2draw, I=I25, J=J25, LR=LR25, full_path=f"{i}.png")
+    #     pass
+    # pass
+
+    ds_train = SkeletonDatasetDCT(file_path=os.path.join(r"E:\second_model_report_data\datas\paddle_action_recognization\new_datas", "new_train_data.npy"), label_path=os.path.join(r"E:\second_model_report_data\datas\paddle_action_recognization\new_datas", "new_train_label.npy"), mode="train", dct_n=30)
+    ds_test = SkeletonDatasetDCT(file_path=os.path.join(r"E:\second_model_report_data\datas\paddle_action_recognization\new_datas", "test_A_data.npy"),
+        label_path=None, mode="test", dct_n=30)
 
     # ds.get_sample_len()
     # ds.get_min_max()
 
-    dl = DataLoader(dataset=ds, batch_size=1, shuffle=False)
+    dl = DataLoader(dataset=ds_train, batch_size=1, shuffle=False)
 
-    for i, data in enumerate(dl): # b, [repeats], 2, 100, 25, 1
+    for i, data in enumerate(dl):  # b, [repeats], 2, 100, 25, 1
         d2draw = paddle.transpose(data[0, 0, :, 0, :, 0], [1, 0]).numpy()
         draw_pic_single_2d(d2draw, I=I25, J=J25, LR=LR25, full_path=f"{i}.png")
         pass

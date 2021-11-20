@@ -8,4 +8,4 @@
 @ide     : PyCharm
 @time    : 2021-11-18 00:15
 '''
-from .skeleton import SkeletonDataset
+from .skeleton import SkeletonDataset, SkeletonDatasetDCT

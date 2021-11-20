@@ -8,5 +8,5 @@
 @ide     : PyCharm
 @time    : 2021-11-19 19:13
 '''
-from .msgcn import MSGCN
+from .msgcn import MSGCN, MSGCNDCT
 from .layers import GraphConv, GraphConvBlock, ResGCB

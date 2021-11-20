@@ -55,8 +55,8 @@ class GraphConvBlock(nn.Layer):
         self.out_len = out_len
 
         self.gcn = GraphConv(in_len, out_len, in_node_n=in_node_n, out_node_n=out_node_n, bias=bias)
-        # self.bn = nn.BatchNorm1D(out_node_n * out_len)
-        self.bn = nn.BatchNorm2D(2)
+        self.bn = nn.BatchNorm1D(out_node_n * out_len)
+        # self.bn = nn.BatchNorm2D(2)
         # self.act = nn.LeakyReLU(leaky)
         self.act = nn.Tanh()
         # self.act = nn.ReLU()
@@ -75,8 +75,8 @@ class GraphConvBlock(nn.Layer):
         '''
         x = self.gcn(input)
         b, vc, t = x.shape
-        # x = self.bn(x.reshape((b, -1))).reshape((b, vc, t))
-        x = self.bn(x.reshape((b, -1, 2, t)).transpose((0, 2, 1, 3))).transpose((0, 2, 1, 3)).reshape((b, vc, t))
+        x = self.bn(x.reshape((b, -1))).reshape((b, vc, t))
+        # x = self.bn(x.reshape((b, -1, 2, t)).transpose((0, 2, 1, 3))).transpose((0, 2, 1, 3)).reshape((b, vc, t))
         x = self.act(x)
         if self.dropout_rate > 0:
             x = self.drop(x)

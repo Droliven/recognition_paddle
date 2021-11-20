@@ -15,11 +15,12 @@ import numpy as np
 
 PLACE = paddle.CUDAPlace(0)  # 5, 7
 
-from msmtgcn.runs import Runner
+from msmtgcn.runs import Runner, RunnerDCT
 
 model_path = os.path.join(r"E:\PythonWorkspace\PaddleVideo\t1111111111\outputs\msgcn", "last.pth")
 
-runner = Runner(exp_name="msmrgcn")
+# runner = Runner(exp_name="msgcn")
+runner = RunnerDCT(exp_name="msgcndct")
 
 # runner.load(model_path)
 # top1 = runner.val_repeat_top1(epoch=-1)

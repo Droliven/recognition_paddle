@@ -16,7 +16,7 @@ import numpy as np
 # ********************** 离散余弦变换基础帧 ****************************
 
 def get_dct_matrix(N):
-    dct_m = np.eye(N)
+    dct_m = np.eye(N).astype(np.float32)
     for k in np.arange(N):
         for i in np.arange(N):
             w = np.sqrt(2 / N)

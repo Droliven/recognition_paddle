@@ -8,6 +8,6 @@
 @ide     : PyCharm
 @time    : 2021-11-18 00:16
 '''
-from .config import Config
+from .config import Config, ConfigDCT
 
 

@@ -8,5 +8,4 @@
 @ide     : PyCharm
 @time    : 2021-11-18 00:15
 '''
-from .losses import CrossEntropyLoss
-from .runner import Runner
+from .runner import Runner, RunnerDCT
