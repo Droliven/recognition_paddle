@@ -2,7 +2,7 @@
 # encoding: utf-8
 '''
 @project : t1111111111
-@file    : main_msmtgcn.py
+@file    : main_msgcn.py
 @author  : Levon
 @contact : levondang@163.com
 @ide     : PyCharm
@@ -15,7 +15,7 @@ import numpy as np
 
 PLACE = paddle.CUDAPlace(0)  # 5, 7
 
-from msmtgcn.runs import Runner, RunnerDCT
+from msgcn.runs import Runner, RunnerDCT
 
 model_path = os.path.join(r"E:\PythonWorkspace\recognition_paddle\ckpt\msgcndct\models", "epoch400_top1_0.4437.pth")
 

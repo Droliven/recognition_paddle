@@ -11,7 +11,7 @@
 import paddle
 import paddle.nn as nn
 
-from msmtgcn.nets import MSGCN, GraphConv, GraphConvBlock, ResGCB
+from msgcn.nets import MSGCN, GraphConv, GraphConvBlock, ResGCB
 
 class MoE(nn.Layer):
     def __init__(self):

@@ -18,10 +18,10 @@ from pprint import pprint
 import paddle.nn.functional as F
 import pandas as pd
 
-from levon_recognition.agcn.datas import SkeletonDataset
-from levon_recognition.agcn.nets import AGCN
-from levon_recognition.agcn.cfgs import Config
-from levon_recognition.agcn.runs import CrossEntropyLoss
+from baselines.agcn.datas import SkeletonDataset
+from baselines.agcn.nets import AGCN
+from baselines.agcn.cfgs import Config
+from baselines.agcn.runs import CrossEntropyLoss
 
 
 class Runner():

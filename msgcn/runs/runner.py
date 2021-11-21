@@ -18,9 +18,9 @@ from pprint import pprint
 import paddle.nn.functional as F
 import pandas as pd
 
-from msmtgcn.datas import SkeletonDatasetDCT, SkeletonDataset
-from msmtgcn.nets import MSGCNDCT, MSGCN
-from msmtgcn.cfgs import ConfigDCT, Config
+from msgcn.datas import SkeletonDatasetDCT, SkeletonDataset
+from msgcn.nets import MSGCNDCT, MSGCN
+from msgcn.cfgs import ConfigDCT, Config
 
 class RunnerDCT():
     def __init__(self, exp_name="msgcndct"):

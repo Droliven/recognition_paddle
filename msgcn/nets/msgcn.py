@@ -13,7 +13,7 @@ import paddle
 import paddle.nn as nn
 from collections import OrderedDict
 
-from msmtgcn.nets.layers import GraphConv, GraphConvBlock, ResGCB
+from msgcn.nets.layers import GraphConv, GraphConvBlock, ResGCB
 
 
 class MSGCN(nn.Layer):

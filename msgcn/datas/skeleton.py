@@ -19,7 +19,7 @@ import math
 import paddle
 from paddle.io import Dataset, DataLoader
 
-from msmtgcn.datas.dcts import get_dct_matrix, dct_transform_numpy
+from msgcn.datas.dcts import get_dct_matrix, dct_transform_numpy
 
 
 class SkeletonDataset(Dataset):
@@ -273,7 +273,7 @@ class SkeletonDatasetDCT(Dataset):
 
 
 if __name__ == '__main__':
-    from levon_recognition.agcn.datas.draw_pictures import draw_pic_single_2d
+    from baselines.agcn.datas.draw_pictures import draw_pic_single_2d
 
     I25 = [8, 12, 13, 14, 19, 14, 8, 9, 10, 11, 22, 11, 8, 1, 0, 15, 0, 16, 1, 2, 3, 1, 5, 6]
     J25 = [12, 13, 14, 19, 20, 21, 9, 10, 11, 22, 23, 24, 1, 0, 15, 17, 16, 18, 2, 3, 4, 5, 6, 7]

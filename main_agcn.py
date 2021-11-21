@@ -14,7 +14,7 @@ import numpy as np
 
 PLACE = paddle.CUDAPlace(0)
 
-from levon_recognition.agcn.runs import Runner
+from baselines.agcn.runs import Runner
 
 runner = Runner()
 runner.run()
