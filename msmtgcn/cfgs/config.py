@@ -135,6 +135,7 @@ class ConfigDCT():
             self.val_data_path = os.path.join(r"E:\second_model_report_data\datas\paddle_action_recognization\new_datas", "new_val_data.npy")
             self.val_label_path = os.path.join(r"E:\second_model_report_data\datas\paddle_action_recognization\new_datas", "new_val_label.npy")
             self.test_A_data_path = os.path.join(r"E:\second_model_report_data\datas\paddle_action_recognization\new_datas", "test_A_data.npy")
+            self.test_B_data_path = os.path.join(r"E:\second_model_report_data\datas\paddle_action_recognization\new_datas", "test_B_data.npy")
 
         elif self.platform == "songbo":
             # self.train_data_path = os.path.join(
@@ -177,9 +178,9 @@ class ConfigDCT():
         self.multi_scale_hidden_dim = [64, 128, 256]
 
         self.num_workers = 8
-        self.lr = 1e-3
-        self.n_epoch = 150
-        self.dropout_rate = 0.2
+        self.lr = 1e-2
+        self.n_epoch = 400
+        self.dropout_rate = 0.1
 
         if self.platform == "aistudio":
             self.ckpt_base_dir = os.path.join("/home/aistudio/work/outputs", "ckpt", exp_name)

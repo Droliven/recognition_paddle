@@ -46,7 +46,8 @@ class RunnerDCT():
         train_dataset = SkeletonDatasetDCT(file_path=self.cfg.train_data_path, label_path=self.cfg.train_label_path, mode="train", dct_n=self.cfg.dct_n)
         self.train_loader = DataLoader(dataset=train_dataset, shuffle=True, batch_size=self.cfg.train_batch_size, num_workers=self.cfg.num_workers, drop_last=True)
 
-        test_dataset = SkeletonDatasetDCT(file_path=self.cfg.test_A_data_path, label_path=None, mode="test", dct_n=self.cfg.dct_n)
+        # test_dataset = SkeletonDatasetDCT(file_path=self.cfg.test_A_data_path, label_path=None, mode="test", dct_n=self.cfg.dct_n)
+        test_dataset = SkeletonDatasetDCT(file_path=self.cfg.test_B_data_path, label_path=None, mode="test", dct_n=self.cfg.dct_n)
         self.test_loader = DataLoader(dataset=test_dataset, shuffle=False, batch_size=self.cfg.test_batch_size, num_workers=self.cfg.num_workers, drop_last=False)
 
         val_dataset = SkeletonDatasetDCT(file_path=self.cfg.val_data_path, label_path=self.cfg.val_label_path,
@@ -60,11 +61,10 @@ class RunnerDCT():
         self.summary = LogWriter(logdir=self.cfg.ckpt_base_dir)
 
 
-    def save(self, checkpoint_path, epoch, best_err, curr_err):
+    def save(self, checkpoint_path, epoch, curr_err):
         state_dict = {
             "epoch": epoch,
             "lr": self.optimizer.get_lr(),
-            "best_err": best_err,
             "curr_err": curr_err,
             "model": self.model.state_dict(),
             "optimizer": self.optimizer.state_dict(),
@@ -78,9 +78,8 @@ class RunnerDCT():
         self.optimizer.set_state_dict(state["optimizer"])
         # self.lr = state["lr"]
         # self.start_epoch = state["epoch"] + 1
-        best_err = state['best_err']
         curr_err = state["curr_err"]
-        print("load from epoch {}, lr {}, curr_avg {}, best_avg {}.".format(state["epoch"], state["lr"], curr_err, best_err))
+        print("load from epoch {}, lr {}, curr_avg {}.".format(state["epoch"], state["lr"], curr_err))
 
 
     def train(self, epoch):
@@ -145,7 +144,8 @@ class RunnerDCT():
                 all_cnt += b
 
         top1 = right / all_cnt
-        print(f"epoch: {epoch}, top1: {right} / {all_cnt} = {top1 * 100} %")
+        self.summary.add_scalar("valtop1", top1, epoch)
+        # print(f"epoch: {epoch}, top1: {right} / {all_cnt} = {top1 * 100} %")
         return top1
 
     def run(self):
@@ -153,23 +153,20 @@ class RunnerDCT():
 
             # if epoch % 5 == 0:
             #     self.lr = lr_decay(self.optimizer, self.lr, self.cfg.lr_decay)
+
             self.summary.add_scalar("LR", self.optimizer.get_lr(), epoch)
 
             average_all_loss = self.train(epoch)
             self.scheduler.step()
 
             val_top1 = self.val_top1(epoch)
-
             print("Epoch {}, average_trainloss {:.4f}, {}top1 {:.4f}".format(epoch, average_all_loss, "val", val_top1))
-
-            if val_top1 < self.best_accuracy:
-                self.best_accuracy = val_top1
-                self.save(os.path.join(self.cfg.ckpt_base_dir, "models", 'epoch{}_top1{:.4f}.pth'.format(epoch, val_top1)), epoch, self.best_accuracy, val_top1)
-
-            self.save(os.path.join(self.cfg.ckpt_base_dir, "models", 'last.pth'), epoch, self.best_accuracy, val_top1)
 
             if epoch % 10 == 0:
                 self.test(epoch)
+                self.save(
+                    os.path.join(self.cfg.ckpt_base_dir, "models", 'epoch{}_top1_{:.4f}.pth'.format(epoch, val_top1)), epoch, val_top1)
+
 
 class Runner():
     def __init__(self, exp_name="msgcn"):
